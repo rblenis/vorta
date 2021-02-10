@@ -1,5 +1,5 @@
-from .borg_thread import BorgThread, FakeProfile, FakeRepo
 from vorta.models import RepoModel
+from .borg_thread import BorgThread, FakeProfile, FakeRepo
 
 
 class BorgInitThread(BorgThread):
@@ -39,7 +39,7 @@ class BorgInitThread(BorgThread):
 
     def process_result(self, result):
         if result['returncode'] == 0:
-            new_repo, created = RepoModel.get_or_create(
+            new_repo, _created = RepoModel.get_or_create(
                 url=result['params']['repo_url'],
                 defaults={
                     'encryption': result['params']['encryption'],

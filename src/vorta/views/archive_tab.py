@@ -361,7 +361,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
             self._set_status(self.tr('Unmounting failed. Make sure no programs are using {}').format(
                 self.mount_points.get(archive_name)))
 
-    def save_prune_setting(self, new_value=None):
+    def save_prune_setting(self, _new_value=None):
         profile = self.profile()
         for i in self.prune_intervals:
             setattr(profile, f'prune_{i}', getattr(self, f'prune_{i}').value())
@@ -420,10 +420,10 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
             window.show()
             window.accepted.connect(process_result)
 
-    def extract_archive_result(self, result):
+    def extract_archive_result(self, _result):
         self._toggle_all_buttons(True)
 
-    def cell_double_clicked(self, row, column):
+    def cell_double_clicked(self, _row, column):
         if column == 3:
             archive_name = self.selected_archive_name()
             if not archive_name:

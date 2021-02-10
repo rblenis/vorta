@@ -1,11 +1,11 @@
-import psutil
 from collections import namedtuple
+import psutil
 import pytest
 from PyQt5 import QtCore
-from vorta.models import BackupProfileModel, ArchiveModel
 import vorta.borg
-import vorta.views.archive_tab
 import vorta.utils
+import vorta.views.archive_tab
+from vorta.models import ArchiveModel, BackupProfileModel
 
 
 class MockFileDialog:
@@ -79,7 +79,7 @@ def test_check(qapp, mocker, borg_json_output, qtbot):
 
 
 def test_archive_mount(qapp, qtbot, mocker, borg_json_output, monkeypatch, choose_file_dialog):
-    def psutil_disk_partitions(**kwargs):
+    def psutil_disk_partitions(**_kwargs):
         DiskPartitions = namedtuple('DiskPartitions', ['device', 'mountpoint'])
         return [DiskPartitions('borgfs', '/tmp')]
 

@@ -24,6 +24,7 @@ class AddRepoWindow(AddRepoBase, AddRepoUI):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.result = None
         self.is_remote_repo = True
+        self.thread = None
 
         self.closeButton.clicked.connect(self.close)
         self.saveButton.clicked.connect(self.run)

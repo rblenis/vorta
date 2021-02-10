@@ -1,6 +1,6 @@
 from dateutil import parser
-from .borg_thread import BorgThread
 from vorta.models import ArchiveModel, RepoModel
+from .borg_thread import BorgThread
 
 
 class BorgListRepoThread(BorgThread):
@@ -32,14 +32,14 @@ class BorgListRepoThread(BorgThread):
 
     def process_result(self, result):
         if result['returncode'] == 0:
-            repo, created = RepoModel.get_or_create(url=result['cmd'][-1])
+            repo, _created = RepoModel.get_or_create(url=result['cmd'][-1])
             if not result['data']:
                 result['data'] = {}  # TODO: Workaround for tests. Can't read mock results 2x.
             remote_archives = result['data'].get('archives', [])
 
             # Delete archives that don't exist on the remote side
             for archive in ArchiveModel.select().where(ArchiveModel.repo == repo.id):
-                if not list(filter(lambda s: s['id'] == archive.snapshot_id, remote_archives)):
+                if not any(s['id'] == archive.snapshot_id for s in remote_archives):
                     archive.delete_instance()
 
             # Add remote archives we don't have locally.

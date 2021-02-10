@@ -22,9 +22,8 @@ class MiscTab(MiscTabBase, MiscTabUI, BackupProfileMixin):
                              'underline; color:#0984e3;">Log</span></a>')
 
         for setting in SettingsModel.select().where(SettingsModel.type == 'checkbox'):
-            x = filter(lambda s: s['key'] == setting.key, get_misc_settings())
-            if not list(x):  # Skip settings that aren't specified in vorta.models.
-                continue
+            if not any(s['key'] == setting.key for s in get_misc_settings()):
+                continue  # Skip settings that aren't specified in vorta.models.
             b = QCheckBox(translate('settings', setting.label))
             b.setCheckState(setting.value)
             b.setTristate(False)

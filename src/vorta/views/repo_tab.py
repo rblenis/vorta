@@ -148,7 +148,7 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
             msg.setText(self.tr("Select a public key from the dropdown first."))
         msg.show()
 
-    def compression_select_action(self, index):
+    def compression_select_action(self, _index):
         profile = self.profile()
         profile.compression = self.repoCompression.currentData()
         profile.save()

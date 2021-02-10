@@ -1,10 +1,10 @@
+import os
 from PyQt5 import uic
-from ..models import SourceFileModel, BackupProfileMixin, SettingsModel
-from ..utils import get_asset, choose_file_dialog, pretty_bytes, sort_sizes, FilePathInfoAsync
 from PyQt5 import QtCore
 from PyQt5.QtCore import QFileInfo
 from PyQt5.QtWidgets import QApplication, QMessageBox, QTableWidgetItem, QHeaderView
-import os
+from ..models import SourceFileModel, BackupProfileMixin, SettingsModel
+from ..utils import get_asset, choose_file_dialog, pretty_bytes, sort_sizes, FilePathInfoAsync
 
 uifile = get_asset('UI/sourcetab.ui')
 SourceUI, SourceBase = uic.loadUiType(uifile)
@@ -156,14 +156,14 @@ class SourceTab(SourceBase, SourceUI, BackupProfileMixin):
     def source_add(self, want_folder):
         def receive():
             dirs = dialog.selectedFiles()
-            for dir in dirs:
-                if not os.access(dir, os.R_OK):
+            for _dir in dirs:
+                if not os.access(_dir, os.R_OK):
                     msg = QMessageBox()
-                    msg.setText(self.tr(f"You don't have read access to {dir}."))
+                    msg.setText(self.tr(f"You don't have read access to {_dir}."))
                     msg.exec()
                     return
 
-                new_source, created = SourceFileModel.get_or_create(dir=dir, profile=self.profile())
+                new_source, created = SourceFileModel.get_or_create(dir=_dir, profile=self.profile())
                 if created:
                     self.add_source_to_table(new_source)
                     new_source.save()

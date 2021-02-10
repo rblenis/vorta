@@ -73,7 +73,7 @@ def test_password_autofill(qapp, qtbot):
 
     qtbot.keyClicks(add_repo_window.repoURL, test_repo_url)
 
-    assert(add_repo_window.passwordLineEdit.text() == password)
+    assert add_repo_window.passwordLineEdit.text() == password
 
 
 def test_repo_add_success(qapp, qtbot, mocker, borg_json_output):
@@ -134,7 +134,7 @@ def test_create(qapp, borg_json_output, mocker, qtbot):
 
     qtbot.mouseClick(main.createStartBtn, QtCore.Qt.LeftButton)
     qtbot.waitUntil(lambda: main.progressText.text().startswith('Backup finished.'), **pytest._wait_defaults)
-    qtbot.waitUntil(lambda: main.createStartBtn.isEnabled(), **pytest._wait_defaults)
+    qtbot.waitUntil(main.createStartBtn.isEnabled, **pytest._wait_defaults)
     assert EventLogModel.select().count() == 1
     assert ArchiveModel.select().count() == 3
     assert RepoModel.get(id=1).unique_size == 15520474

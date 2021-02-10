@@ -86,13 +86,13 @@ class VortaApp(QtSingleApplication):
         profile = BackupProfileModel.get_or_none(name=profile_name)
         if profile is not None:
             if profile.repo is None:
-                logger.warning(f"Add a repository to {profile_name}")
+                logger.warning("Add a repository to {profile_name}", profile_name=profile_name)
             # Wait a bit in case something is running
             while BorgThread.is_running():
                 time.sleep(0.1)
             self.create_backup_action(profile_id=profile.id)
         else:
-            logger.warning(f"Invalid profile name {profile_name}")
+            logger.warning("Invalid profile name {profile_name}", profile_name=profile_name)
 
     def eventFilter(self, source, event):
         if event.type() == QtCore.QEvent.ApplicationPaletteChange and isinstance(source, MainWindow):

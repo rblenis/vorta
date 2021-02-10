@@ -120,7 +120,7 @@ class MainWindow(MainWindowBase, MainWindowUI):
         self.cancelButton.setEnabled(not create_enabled)
         self.cancelButton.repaint()
 
-    def profile_select_action(self, index):
+    def profile_select_action(self, _index):
         self.current_profile = BackupProfileModel.get(id=self.profileSelector.currentData())
         self.archiveTab.populate_from_profile()
         self.repoTab.populate_from_profile()

@@ -38,7 +38,7 @@ class SSHAddWindow(SSHAddBase, SSHAddUI):
         self.outputFileTextBox.setText('~/.ssh/id_ed25519')
         self.formatSelect.currentIndexChanged.connect(self.format_select_change)
 
-    def format_select_change(self, index):
+    def format_select_change(self, _index):
         new_output = f'~/.ssh/id_{self.formatSelect.currentData()}'
         self.outputFileTextBox.setText(new_output)
 
@@ -47,10 +47,10 @@ class SSHAddWindow(SSHAddBase, SSHAddUI):
         self.lengthSelect.addItem(self.tr('Medium'), ('2048', '384'))
 
     def generate_key(self):
-        format = self.formatSelect.currentData()
+        key_format = self.formatSelect.currentData()
         length = self.lengthSelect.currentData()
 
-        if format == 'rsa':
+        if key_format == 'rsa':
             length = length[0]
         else:
             length = length[1]
@@ -61,9 +61,9 @@ class SSHAddWindow(SSHAddBase, SSHAddUI):
         else:
             self.sshproc = QProcess(self)
             self.sshproc.finished.connect(self.generate_key_result)
-            self.sshproc.start('ssh-keygen', ['-t', format, '-b', length, '-f', output_path, '-N', ''])
+            self.sshproc.start('ssh-keygen', ['-t', key_format, '-b', length, '-f', output_path, '-N', ''])
 
-    def generate_key_result(self, exitCode, exitStatus):
+    def generate_key_result(self, exitCode, _exitStatus):
         if exitCode == 0:
             output_path = os.path.expanduser(self.outputFileTextBox.text())
             pub_key = open(output_path + '.pub').read().strip()

@@ -154,14 +154,14 @@ def parse_diff_lines(diff_lines):
 
             full_path = rest_of_line.lstrip(' ')
 
-        dir, name = os.path.split(full_path)
+        dirpath, name = os.path.split(full_path)
 
         # add to nested dict of folders to find nested dirs.
-        d = get_dict_from_list(nested_file_list, dir.split('/'))
+        d = get_dict_from_list(nested_file_list, dirpath.split('/'))
         if name not in d:
             d[name] = {}
 
-        return size, change_type, name, dir
+        return size, change_type, name, dirpath
 
     files_with_attributes = [parse_line(line) for line in diff_lines if line]
 
