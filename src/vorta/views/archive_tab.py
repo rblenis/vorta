@@ -33,6 +33,14 @@ uifile = get_asset('UI/archivetab.ui')
 ArchiveTabUI, ArchiveTabBase = uic.loadUiType(uifile)
 
 
+class ArchiveColumn:
+    Date = 0
+    Size = 1
+    Duration = 2
+    MountPoint = 3
+    Name = 4
+
+
 class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
     prune_intervals = ['hour', 'day', 'week', 'month', 'year']
 
@@ -46,11 +54,11 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
         header = self.archiveTable.horizontalHeader()
         header.setVisible(True)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.Interactive)
-        header.setSectionResizeMode(4, QHeaderView.Stretch)
+        header.setSectionResizeMode(ArchiveColumn.Date, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(ArchiveColumn.Size, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(ArchiveColumn.Duration, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(ArchiveColumn.MountPoint, QHeaderView.Interactive)
+        header.setSectionResizeMode(ArchiveColumn.Name, QHeaderView.Stretch)
         header.setStretchLastSection(True)
 
         if sys.platform != 'darwin':
@@ -146,27 +154,25 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
             sorting = self.archiveTable.isSortingEnabled()
             self.archiveTable.setSortingEnabled(False)
+            self.archiveTable.setRowCount(len(archives))
             for row, archive in enumerate(archives):
-                self.archiveTable.insertRow(row)
-
                 formatted_time = archive.time.strftime('%Y-%m-%d %H:%M')
-                self.archiveTable.setItem(row, 0, QTableWidgetItem(formatted_time))
-                self.archiveTable.setItem(row, 1, SizeItem(pretty_bytes(archive.size)))
+                self.archiveTable.setItem(row, ArchiveColumn.Date, QTableWidgetItem(formatted_time))
+                self.archiveTable.setItem(row, ArchiveColumn.Size, SizeItem(pretty_bytes(archive.size)))
                 if archive.duration is not None:
                     formatted_duration = str(timedelta(seconds=round(archive.duration)))
                 else:
                     formatted_duration = ''
 
-                self.archiveTable.setItem(row, 2, QTableWidgetItem(formatted_duration))
+                self.archiveTable.setItem(row, ArchiveColumn.Duration, QTableWidgetItem(formatted_duration))
 
                 mount_point = self.mount_points.get(archive.name)
                 if mount_point is not None:
                     item = QTableWidgetItem(mount_point)
-                    self.archiveTable.setItem(row, 3, item)
+                    self.archiveTable.setItem(row, ArchiveColumn.MountPoint, item)
 
-                self.archiveTable.setItem(row, 4, QTableWidgetItem(archive.name))
+                self.archiveTable.setItem(row, ArchiveColumn.Name, QTableWidgetItem(archive.name))
 
-            self.archiveTable.setRowCount(len(archives))
             self.archiveTable.setSortingEnabled(sorting)
             item = self.archiveTable.item(0, 0)
             self.archiveTable.scrollToItem(item)
@@ -211,7 +217,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
         # Conditions are met (borg binary available, etc)
         row_selected = self.archiveTable.selectionModel().selectedRows()
         if row_selected:
-            archive_cell = self.archiveTable.item(row_selected[0].row(), 4)
+            archive_cell = self.archiveTable.item(row_selected[0].row(), ArchiveColumn.Name)
             if archive_cell:
                 archive_name = archive_cell.text()
                 params['cmd'][-1] += f'::{archive_name}'
@@ -281,7 +287,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
     def selected_archive_name(self):
         row_selected = self.archiveTable.selectionModel().selectedRows()
         if row_selected:
-            archive_cell = self.archiveTable.item(row_selected[0].row(), 4)
+            archive_cell = self.archiveTable.item(row_selected[0].row(), ArchiveColumn.Name)
             if archive_cell:
                 return archive_cell.text()
         return None
@@ -323,7 +329,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
                 archive_name = result['params']['current_archive']
                 row = self.row_of_archive(archive_name)
                 item = QTableWidgetItem(result['cmd'][-1])
-                self.archiveTable.setItem(row, 3, item)
+                self.archiveTable.setItem(row, ArchiveColumn.MountPoint, item)
 
     def umount_action(self):
         archive_name = self.selected_archive_name()
@@ -356,7 +362,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
             del self.mount_points[archive_name]
             row = self.row_of_archive(archive_name)
             item = QTableWidgetItem('')
-            self.archiveTable.setItem(row, 3, item)
+            self.archiveTable.setItem(row, ArchiveColumn.MountPoint, item)
         else:
             self._set_status(self.tr('Unmounting failed. Make sure no programs are using {}').format(
                 self.mount_points.get(archive_name)))
@@ -373,7 +379,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
         row_selected = self.archiveTable.selectionModel().selectedRows()
         if row_selected:
-            archive_cell = self.archiveTable.item(row_selected[0].row(), 4)
+            archive_cell = self.archiveTable.item(row_selected[0].row(), ArchiveColumn.Name)
             if archive_cell:
                 archive_name = archive_cell.text()
                 params = BorgListArchiveThread.prepare(profile, archive_name)
@@ -436,7 +442,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
     def row_of_archive(self, archive_name):
         items = self.archiveTable.findItems(archive_name, QtCore.Qt.MatchExactly)
-        rows = [item.row() for item in items if item.column() == 4]
+        rows = [item.row() for item in items if item.column() == ArchiveColumn.Name]
         return rows[0] if rows else None
 
     def confirm_dialog(self, title, text):
@@ -484,8 +490,8 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
         def process_result():
             if window.selected_archives:
                 self.selected_archives = window.selected_archives
-            archive_cell_newer = self.archiveTable.item(self.selected_archives[0], 4)
-            archive_cell_older = self.archiveTable.item(self.selected_archives[1], 4)
+            archive_cell_newer = self.archiveTable.item(self.selected_archives[0], ArchiveColumn.Name)
+            archive_cell_older = self.archiveTable.item(self.selected_archives[1], ArchiveColumn.Name)
             if archive_cell_older and archive_cell_newer:
                 archive_name_newer = archive_cell_newer.text()
                 archive_name_older = archive_cell_older.text()

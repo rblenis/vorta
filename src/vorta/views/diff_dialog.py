@@ -12,13 +12,15 @@ class DiffDialog(DiffDialogBase, DiffDialogUI):
         super().__init__()
         self.setupUi(self)
 
+        from .archive_tab import ArchiveColumn
+
         header = self.archiveTable.horizontalHeader()
         header.setVisible(True)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.Interactive)
-        header.setSectionResizeMode(4, QHeaderView.Stretch)
+        header.setSectionResizeMode(ArchiveColumn.Date, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(ArchiveColumn.Size, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(ArchiveColumn.Duration, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(ArchiveColumn.MountPoint, QHeaderView.Interactive)
+        header.setSectionResizeMode(ArchiveColumn.Name, QHeaderView.Stretch)
         header.setStretchLastSection(True)
 
         self.archiveTable.setSelectionBehavior(QTableView.SelectRows)
