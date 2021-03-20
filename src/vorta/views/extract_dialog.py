@@ -37,7 +37,9 @@ class ExtractDialog(ExtractDialogBase, ExtractDialogUI):
                 d[name] = {}
             return size, modified, name, dirpath
 
-        # handle case of a single line of result, which will already be a dict
+        # If fs_data is already a dict, then there was just a single json-line
+        # and the default handler already parsed into json dict, otherwise
+        # fs_data is a str, and needs to be split and parsed into json dicts
         lines = [fs_data] if isinstance(fs_data, dict) else \
             [json.loads(line) for line in fs_data.split('\n') if line]
 

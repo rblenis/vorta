@@ -17,13 +17,10 @@ class BorgDeleteThread(BorgThread):
         ret = super().prepare(profile)
         if not ret['ok']:
             return ret
-        else:
-            ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['borg', 'delete', '--info', '--log-json']
-        cmd.append(f'{profile.repo.url}')
-
+        ret['cmd'] = [
+            'borg', 'delete', '--info', '--log-json',
+            f'{profile.repo.url}']
         ret['ok'] = True
-        ret['cmd'] = cmd
 
         return ret

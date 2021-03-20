@@ -19,14 +19,11 @@ class BorgListRepoThread(BorgThread):
         ret = super().prepare(profile)
         if not ret['ok']:
             return ret
-        else:
-            ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['borg', 'list', '--info', '--log-json', '--json']
-        cmd.append(f'{profile.repo.url}')
-
+        ret['cmd'] = [
+            'borg', 'list', '--info', '--log-json', '--json',
+            f'{profile.repo.url}']
         ret['ok'] = True
-        ret['cmd'] = cmd
 
         return ret
 

@@ -13,8 +13,6 @@ class BorgMountThread(BorgThread):
         ret = super().prepare(profile)
         if not ret['ok']:
             return ret
-        else:
-            ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
         cmd = ['borg', '--log-json', 'mount']
 

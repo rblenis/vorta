@@ -24,11 +24,12 @@ class BorgInfoRepoThread(BorgThread):
         ret = super().prepare(profile)
         if not ret['ok']:
             return ret
-        else:
-            ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ["borg", "info", "--info", "--json", "--log-json"]
-        cmd.append(profile.repo.url)
+        ret['ok'] = False  # Set back to false, so we can do our own checks here.
+
+        cmd = [
+            "borg", "info", "--info", "--json", "--log-json",
+            profile.repo.url]
 
         ret['additional_env'] = {
             'BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK': "yes",

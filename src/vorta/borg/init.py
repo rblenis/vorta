@@ -19,12 +19,13 @@ class BorgInitThread(BorgThread):
         ret = super().prepare(profile)
         if not ret['ok']:
             return ret
-        else:
-            ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ["borg", "init", "--info", "--log-json"]
-        cmd.append(f"--encryption={params['encryption']}")
-        cmd.append(params['repo_url'])
+        ret['ok'] = False  # Set back to false, so we can do our own checks here.
+
+        ret['cmd'] = [
+            "borg", "init", "--info", "--log-json",
+            f"--encryption={params['encryption']}",
+            params['repo_url']]
 
         ret['additional_env'] = {
             'BORG_RSH': 'ssh -oStrictHostKeyChecking=no'
@@ -33,7 +34,6 @@ class BorgInitThread(BorgThread):
         ret['encryption'] = params['encryption']
         ret['password'] = params['password']
         ret['ok'] = True
-        ret['cmd'] = cmd
 
         return ret
 

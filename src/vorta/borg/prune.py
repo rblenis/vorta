@@ -18,8 +18,8 @@ class BorgPruneThread(BorgThread):
         ret = super().prepare(profile)
         if not ret['ok']:
             return ret
-        else:
-            ret['ok'] = False  # Set back to false, so we can do our own checks here.
+
+        ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
         cmd = ['borg', 'prune', '--list', '--info', '--log-json']
 

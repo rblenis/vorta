@@ -14,9 +14,8 @@ class BorgUmountThread(BorgThread):
         ret = super().prepare(profile)
         if not ret['ok']:
             return ret
-        else:
-            ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
+        ret['ok'] = False  # Set back to false, so we can do our own checks here.
         ret['active_mount_points'] = []
         partitions = psutil.disk_partitions(all=True)
         for p in partitions:
@@ -27,9 +26,7 @@ class BorgUmountThread(BorgThread):
             ret['message'] = trans_late('messages', 'No active Borg mounts found.')
             return ret
 
-        cmd = ['borg', 'umount', '--log-json']
-
+        ret['cmd'] = ['borg', 'umount', '--log-json']
         ret['ok'] = True
-        ret['cmd'] = cmd
 
         return ret
