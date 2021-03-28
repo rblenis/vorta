@@ -8,6 +8,7 @@ pytest-cov
 pytest-faulthandler
 pytest-mock
 pytest-qt
+setuptools_scm
 tox
 transifex-client
 wheel
